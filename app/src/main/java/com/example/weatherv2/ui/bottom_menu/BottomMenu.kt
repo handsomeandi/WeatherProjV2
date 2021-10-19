@@ -1,4 +1,4 @@
-package com.example.weatherv2
+package com.example.weatherv2.ui.bottom_menu
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -22,32 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-
-@Preview
-@Composable
-fun WeatherApp() {
-    val navController = rememberNavController()
-
-    Box {
-        NavHost(navController = navController, startDestination = "weatherScreen") {
-            navGraph()
-        }
-        BottomMenu(
-            items = listOf(
-                BottomMenuContent("Weather", R.drawable.ic_launcher_foreground, MainDestinations.WEATHER_SCREEN),
-                BottomMenuContent("Towns", R.drawable.ic_launcher_foreground, MainDestinations.TOWNS_SCREEN),
-                BottomMenuContent("Info", R.drawable.ic_launcher_foreground, MainDestinations.INFO_SCREEN)
-            ), Modifier.align(Alignment.BottomCenter),navController = navController
-        )
-    }
-}
 
 @Composable
 fun BottomMenu(
@@ -56,8 +31,7 @@ fun BottomMenu(
     activeHighlightColor: Color = Color.Blue,
     activeTextColor: Color = Color.White,
     inactiveTextColor: Color = Color.LightGray,
-    initialSelectedItemIndex: Int = 0,
-    navController: NavHostController
+    initialSelectedItemIndex: Int = 0
 ) {
     var selectedItemIndex by remember {
         mutableStateOf(initialSelectedItemIndex)
@@ -79,7 +53,7 @@ fun BottomMenu(
                 inactiveTextColor = inactiveTextColor
             ) {
                 selectedItemIndex = index
-                navController.navigate(item.navigationRoute)
+                item.navigationAction()
             }
         }
     }
@@ -119,18 +93,5 @@ fun BottomMenuItem(
             text = item.title,
             color = if (isSelected) activeTextColor else inactiveTextColor
         )
-    }
-}
-
-
-fun NavGraphBuilder.navGraph() {
-    composable(MainDestinations.WEATHER_SCREEN) { from ->
-        WeatherScreen()
-    }
-    composable(MainDestinations.TOWNS_SCREEN) { from ->
-        TownsScreen()
-    }
-    composable(MainDestinations.INFO_SCREEN) { from ->
-        InfoScreen()
     }
 }
