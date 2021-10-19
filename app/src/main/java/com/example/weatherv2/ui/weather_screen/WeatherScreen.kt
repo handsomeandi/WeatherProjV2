@@ -1,4 +1,4 @@
-package com.example.weatherv2
+package com.example.weatherv2.ui.weather_screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -19,12 +19,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import com.example.weatherv2.ui.theme.Typography
 
-@Preview
 @Composable
-fun WeatherScreen() {
+fun WeatherScreen(viewModel: WeatherViewModel) {
     var weatherInfoList = remember {
         mutableStateListOf(
             WeatherInfo("test", "test info1"),

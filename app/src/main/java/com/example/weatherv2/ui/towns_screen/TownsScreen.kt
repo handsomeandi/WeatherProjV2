@@ -1,4 +1,4 @@
-package com.example.weatherv2
+package com.example.weatherv2.ui.towns_screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
