@@ -1,7 +1,7 @@
 package com.example.weatherv2.di
 
 import com.example.weatherv2.config.AppUrls
-import com.example.weatherv2.data.WeatherApi
+import com.example.weatherv2.data.api.WeatherApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

@@ -1,13 +1,14 @@
-package com.example.weatherv2.data
+package com.example.weatherv2.data.api
 
 import com.google.gson.annotations.SerializedName
 
 data class WeatherResponse(
-    @SerializedName("main") private val main: MainObject? = null,
-    @SerializedName("weather") private val weather: List<WeatherObject>? = null,
-    @SerializedName("wind") private val wind: WindObject? = null,
-    @SerializedName("sys") private var sys: SunObject,
-    @SerializedName("name") var townName: String? = null
+    @SerializedName("main") val main: MainObject? = null,
+    @SerializedName("weather") val weather: List<WeatherObject>? = null,
+    @SerializedName("wind") val wind: WindObject? = null,
+    @SerializedName("sys") var sys: SunObject,
+    @SerializedName("name") var townName: String? = null,
+    @SerializedName("id") var townID: String? = null
 )
 
 data class MainObject(

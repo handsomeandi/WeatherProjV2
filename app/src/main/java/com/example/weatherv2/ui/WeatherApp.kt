@@ -19,7 +19,9 @@ import com.example.weatherv2.ui.bottom_menu.BottomMenuContent
 import com.example.weatherv2.ui.towns_screen.TownsScreen
 import com.example.weatherv2.ui.weather_screen.WeatherScreen
 import com.example.weatherv2.ui.weather_screen.WeatherViewModel
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
 
+@ExperimentalPermissionsApi
 @Preview
 @Composable
 fun WeatherApp() {
@@ -47,10 +49,11 @@ fun WeatherApp() {
 }
 
 
+@ExperimentalPermissionsApi
 fun NavGraphBuilder.navGraph() {
     composable(MainDestinations.WEATHER_SCREEN) { from ->
         val weatherViewModel = hiltViewModel<WeatherViewModel>()
-        WeatherScreen(weatherViewModel)
+        WeatherScreen(weatherViewModel, from.arguments?.getString(MainDestinations.TOWN_NAME))
     }
     composable(MainDestinations.TOWNS_SCREEN) { from ->
         TownsScreen()

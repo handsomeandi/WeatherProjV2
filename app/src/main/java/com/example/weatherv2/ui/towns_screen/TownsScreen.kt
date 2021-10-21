@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.weatherv2.domain.model.Town
 import kotlin.random.Random
 
 @Preview
@@ -30,8 +31,8 @@ import kotlin.random.Random
 fun TownsScreen() {
     var townsList = remember {
         mutableStateListOf<Town>(
-            Town(1,"Moscow"),
-            Town(3,"Simferopol"),
+            Town("1","Moscow"),
+            Town("3","Simferopol"),
         )
     }
     Column(modifier = Modifier.fillMaxHeight().background(Color.White)) {
@@ -43,7 +44,7 @@ fun TownsScreen() {
             townName = it
         })
         Button(onClick = {
-            if (townName.isNotEmpty()) townsList.add(Town(Random.nextInt(), townName))
+            if (townName.isNotEmpty()) townsList.add(Town(Random.nextInt().toString(), townName))
             townName = ""
         }) {
             Text(text = "Add")
@@ -70,7 +71,7 @@ fun TownList(list: SnapshotStateList<Town>) {
 
 
 @Composable
-fun TownItem(town: Town, onClick: (id: Int) -> Unit) {
+fun TownItem(town: Town, onClick: (id: String) -> Unit) {
     Text(text = town.name, Modifier.clickable {
         onClick(town.id)
     })

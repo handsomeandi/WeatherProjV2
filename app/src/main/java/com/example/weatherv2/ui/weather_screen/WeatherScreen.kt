@@ -1,5 +1,6 @@
 package com.example.weatherv2.ui.weather_screen
 
+import android.Manifest
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,25 +13,34 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import com.example.weatherv2.domain.model.TownWeather
 import com.example.weatherv2.ui.theme.Typography
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 
+@ExperimentalPermissionsApi
 @Composable
-fun WeatherScreen(viewModel: WeatherViewModel) {
-    var weatherInfoList = remember {
-        mutableStateListOf(
-            WeatherInfo("test", "test info1"),
-            WeatherInfo("test", "test info2"),
-            WeatherInfo("test", "test info3")
+fun WeatherScreen(viewModel: WeatherViewModel, townName: String?) {
+    val weatherUiState by viewModel.state.collectAsState()
+//    var weatherInfoList = remember {
+//        mutableStateOf(weatherUiState.currentTownWeather?.weatherInfo)
+//    }
+    val mapPermissionsState = rememberMultiplePermissionsState(
+        permissions = listOf(
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
         )
+    )
+    LaunchedEffect(weatherUiState.currentTownWeather) {
+        mapPermissionsState.launchMultiplePermissionRequest()
+        viewModel.intent.send(WeatherIntent.RequestWeather(townName))
     }
     Column(
         Modifier
@@ -40,7 +50,7 @@ fun WeatherScreen(viewModel: WeatherViewModel) {
     ) {
 
         InfoList(
-            list = weatherInfoList
+            townWeather = weatherUiState.currentTownWeather
         )
 
     }
@@ -48,13 +58,14 @@ fun WeatherScreen(viewModel: WeatherViewModel) {
 }
 
 @Composable
-fun InfoList(list: SnapshotStateList<WeatherInfo>) {
+fun InfoList(townWeather: TownWeather?) {
+    Text(text = townWeather?.town?.name ?: "", style = Typography.h5)
     LazyColumn(
         Modifier
             .background(Color.White)
             .padding(top = 16.dp)
     ) {
-        items(list) { item ->
+        items(townWeather?.weatherInfo ?: listOf()) { item ->
             WeatherInfoItem(label = item.label, info = item.info)
             Spacer(modifier = Modifier.height(16.dp))
         }

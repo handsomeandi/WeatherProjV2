@@ -1,0 +1,27 @@
+CREATE TABLE townItems (
+    id TEXT NOT NULL UNIQUE PRIMARY KEY,
+    name TEXT NOT NULL
+);
+
+selectAll:
+SELECT *
+FROM townItems
+ORDER BY name;
+
+insertOrReplace:
+INSERT OR REPLACE INTO townItems(
+  id,
+  name
+)
+VALUES (?, ?);
+
+selectByName:
+SELECT *
+FROM townItems
+WHERE name = ?;
+
+deleteTown:
+DELETE FROM townItems WHERE id = ?;
+
+empty:
+DELETE FROM townItems;
