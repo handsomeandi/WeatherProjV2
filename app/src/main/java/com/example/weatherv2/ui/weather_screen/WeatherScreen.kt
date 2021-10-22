@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -23,49 +24,61 @@ import androidx.compose.ui.unit.dp
 import com.example.weatherv2.domain.model.TownWeather
 import com.example.weatherv2.ui.theme.Typography
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.PermissionsRequired
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 
 @ExperimentalPermissionsApi
 @Composable
 fun WeatherScreen(viewModel: WeatherViewModel, townName: String?) {
     val weatherUiState by viewModel.state.collectAsState()
-//    var weatherInfoList = remember {
-//        mutableStateOf(weatherUiState.currentTownWeather?.weatherInfo)
-//    }
     val mapPermissionsState = rememberMultiplePermissionsState(
         permissions = listOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION,
         )
     )
-    LaunchedEffect(weatherUiState.currentTownWeather) {
-        mapPermissionsState.launchMultiplePermissionRequest()
-        viewModel.intent.send(WeatherIntent.RequestWeather(townName))
-    }
+
     Column(
         Modifier
             .background(Color.White)
             .fillMaxHeight(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        PermissionsRequired(
+            multiplePermissionsState = mapPermissionsState,
+            permissionsNotGrantedContent = {
+                SideEffect {
+                    mapPermissionsState.launchMultiplePermissionRequest()
+                }
+            },
+            permissionsNotAvailableContent = {
 
-        InfoList(
-            townWeather = weatherUiState.currentTownWeather
-        )
+            },
+        ) {
+            LaunchedEffect(weatherUiState.currentTownWeather) {
+                viewModel.intent.send(WeatherIntent.RequestWeather(townName))
+            }
+            weatherUiState.currentTownWeather?.let {
+                InfoList(
+                    weather = it
+                )
+            }
+        }
+
 
     }
 
 }
 
 @Composable
-fun InfoList(townWeather: TownWeather?) {
-    Text(text = townWeather?.town?.name ?: "", style = Typography.h5)
+fun InfoList(weather: TownWeather) {
+    Text(text = weather.town.name, style = Typography.h5)
     LazyColumn(
         Modifier
             .background(Color.White)
             .padding(top = 16.dp)
     ) {
-        items(townWeather?.weatherInfo ?: listOf()) { item ->
+        items(weather.weatherInfo) { item ->
             WeatherInfoItem(label = item.label, info = item.info)
             Spacer(modifier = Modifier.height(16.dp))
         }

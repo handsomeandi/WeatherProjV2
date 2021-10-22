@@ -13,48 +13,57 @@ import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.weatherv2.domain.model.Town
-import kotlin.random.Random
+import kotlinx.coroutines.launch
 
-@Preview
 @Composable
-fun TownsScreen() {
-    var townsList = remember {
-        mutableStateListOf<Town>(
-            Town("1","Moscow"),
-            Town("3","Simferopol"),
-        )
+fun TownsScreen(viewModel: TownsViewModel, onTownClicked: (String) -> Unit) {
+    val townsState by viewModel.state.collectAsState()
+    LaunchedEffect(townsState.townsList) {
+        viewModel.intent.send(TownsIntent.GetAllTowns)
     }
-    Column(modifier = Modifier.fillMaxHeight().background(Color.White)) {
-        TownList(list = townsList)
-        var townName by remember {
-            mutableStateOf("")
+    Column(
+        modifier = Modifier
+            .fillMaxHeight()
+            .background(Color.White)
+    ) {
+        TownList(list = townsState.townsList, onTownClicked)
+        Column {
+            val scope = rememberCoroutineScope()
+            var townName by remember {
+                mutableStateOf("")
+            }
+            TextField(value = townName, onValueChange = {
+                townName = it
+            })
+            Button(onClick = {
+                scope.launch {
+                    viewModel.intent.send(TownsIntent.AddTown(townName))
+                    townName = ""
+                }
+//            if (townName.isNotEmpty()) townsList.add(Town(Random.nextInt().toString(), townName))
+//            townName = ""
+            }) {
+                Text(text = "Add")
+            }
         }
-        TextField(value = townName, onValueChange = {
-            townName = it
-        })
-        Button(onClick = {
-            if (townName.isNotEmpty()) townsList.add(Town(Random.nextInt().toString(), townName))
-            townName = ""
-        }) {
-            Text(text = "Add")
-        }
+
     }
 }
 
 
 @Composable
-fun TownList(list: SnapshotStateList<Town>) {
+fun TownList(list: List<Town>, onTownClicked: (String) -> Unit) {
     LazyColumn(
         Modifier
             .background(Color.White)
@@ -62,7 +71,7 @@ fun TownList(list: SnapshotStateList<Town>) {
     ) {
         items(list) { item ->
             TownItem(town = item, onClick = {
-                //Navigate to weather screen
+                onTownClicked(it)
             })
             Spacer(modifier = Modifier.height(16.dp))
         }
@@ -73,7 +82,7 @@ fun TownList(list: SnapshotStateList<Town>) {
 @Composable
 fun TownItem(town: Town, onClick: (id: String) -> Unit) {
     Text(text = town.name, Modifier.clickable {
-        onClick(town.id)
+        onClick(town.name)
     })
 }
 

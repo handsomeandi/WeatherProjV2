@@ -17,8 +17,8 @@ object MainDestinations {
 }
 
 class WeatherNavigationActions(navController: NavHostController) {
-    val navigateToWeatherScreen: () -> Unit = {
-        navController.navigate(MainDestinations.WEATHER_SCREEN) {
+    val navigateToWeatherScreen: (townName: String?) -> Unit = {
+        navController.navigate("${MainDestinations.WEATHER_SCREEN}?${MainDestinations.TOWN_NAME}=$it") {
             popUpTo(navController.graph.findStartDestination().id) {
                 saveState = true
             }

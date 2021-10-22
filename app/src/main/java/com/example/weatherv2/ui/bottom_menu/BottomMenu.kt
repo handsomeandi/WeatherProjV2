@@ -23,6 +23,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 
 @Composable
 fun BottomMenu(
@@ -31,10 +33,12 @@ fun BottomMenu(
     activeHighlightColor: Color = Color.Blue,
     activeTextColor: Color = Color.White,
     inactiveTextColor: Color = Color.LightGray,
-    initialSelectedItemIndex: Int = 0
+    initialSelectedItemIndex: Int = 0,
+    navController: NavController,
+    selectedIndex: Int? = null
 ) {
     var selectedItemIndex by remember {
-        mutableStateOf(initialSelectedItemIndex)
+        mutableStateOf(selectedIndex ?: initialSelectedItemIndex)
     }
     Row(
         horizontalArrangement = Arrangement.SpaceAround,
@@ -52,8 +56,14 @@ fun BottomMenu(
                 activeTextColor = activeTextColor,
                 inactiveTextColor = inactiveTextColor
             ) {
-                selectedItemIndex = index
-                item.navigationAction()
+                selectedItemIndex = selectedIndex ?: index
+                navController.navigate(item.route){
+                    popUpTo(navController.graph.findStartDestination().id) {
+                        saveState = true
+                    }
+                    launchSingleTop = true
+                    restoreState = true
+                }
             }
         }
     }

@@ -10,7 +10,6 @@ import com.example.weatherv2.ui.base.BaseViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
@@ -31,7 +30,7 @@ class WeatherViewModel @Inject constructor(
     private val fusedLocationProviderClient: FusedLocationProviderClient,
     private val getWeatherDataUseCase: GetWeatherDataUseCase,
     private val addTownUseCase: AddTownUseCase
-) : BaseViewModel<WeatherIntent, WeatherUiState>() {
+) : BaseViewModel<WeatherIntent>() {
 
     private val _state: MutableStateFlow<WeatherUiState> = MutableStateFlow(WeatherUiState())
     val state: StateFlow<WeatherUiState>
@@ -42,28 +41,27 @@ class WeatherViewModel @Inject constructor(
             intent.consumeAsFlow().collect { intent ->
                 when (intent) {
                     is WeatherIntent.RequestWeather -> requestWeather(intent.townName)
-                    else -> _state.update { state ->
-                        state.copy()
-                    }
+//                    else -> _state.update { state ->
+//                        state.copy()
+//                    }
                 }
             }
         }
     }
 
-    //TODO: fix logic of requesting location and displaying weather after that. Fix multiple calls on this method
     private fun requestWeather(townName: String?) {
         viewModelScope.launch {
-            requestForLastKnownLocation()
             with(_state.value) {
                 if (townName == null) {
+                    requestForLastKnownLocation()
                     _state.update {
                         it.copy().apply {
-                            if (currentLocation != null) {
+                            currentLocation?.let { coordinates ->
                                 currentTownWeather = getWeatherDataUseCase.getCurrentLocationWeather(
-                                    currentLocation!!.latitude.toString(),
-                                    currentLocation!!.longitude.toString()
+                                    coordinates.latitude.toString(),
+                                    coordinates.longitude.toString()
                                 )
-                            }else Log.d("testing", "No current location")
+                            }
                         }
                     }
                     currentTownWeather?.town?.let {
@@ -81,13 +79,12 @@ class WeatherViewModel @Inject constructor(
     }
 
     private suspend fun requestForLastKnownLocation() {
-            val coordinates = getCurrentLocation()
-            _state.update { state ->
-                state.copy().apply {
-                    currentLocation = coordinates
-                }
+        val coordinates = getCurrentLocation()
+        _state.update { state ->
+            state.apply {
+                currentLocation = coordinates
             }
-
+        }
     }
 
     @SuppressLint("MissingPermission")
