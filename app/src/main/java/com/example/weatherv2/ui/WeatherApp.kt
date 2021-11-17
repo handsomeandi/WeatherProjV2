@@ -33,16 +33,11 @@ fun WeatherApp() {
     val navController = rememberNavController()
     //TODO: make bottom navigation item selection and state saving work
     Box {
-        var selectedIndex by remember {
-            mutableStateOf<Int?>(null)
-        }
         NavHost(
             navController = navController,
             startDestination = "${MainDestinations.WEATHER_SCREEN}?${MainDestinations.TOWN_NAME}={townName}"
         ) {
-            navGraph(navController){
-                selectedIndex = it
-            }
+            navGraph(navController)
         }
         BottomMenu(
             items = listOf(
@@ -53,14 +48,17 @@ fun WeatherApp() {
                 ),
                 BottomMenuContent("Towns", R.drawable.ic_launcher_foreground, MainDestinations.TOWNS_SCREEN),
                 BottomMenuContent("Info", R.drawable.ic_launcher_foreground, MainDestinations.INFO_SCREEN)
-            ), navController = navController, modifier = Modifier.align(Alignment.BottomCenter), selectedIndex = selectedIndex
+            ), navController = navController, modifier = Modifier.align(Alignment.BottomCenter)
         )
     }
 }
 
 
 @ExperimentalPermissionsApi
-fun NavGraphBuilder.navGraph(navController: NavController, onBottomItemNavChanged: (Int)->Unit) {
+fun NavGraphBuilder.navGraph(navController: NavController) {
+    //TODO: create shared weather viewModel that contains current town and current location
+//    val sharedViewMode: SharedViewModel = hiltViewModel<SharedViewModel>()
+
     composable("${MainDestinations.WEATHER_SCREEN}?${MainDestinations.TOWN_NAME}={townName}") { from ->
         val weatherViewModel = hiltViewModel<WeatherViewModel>()
         WeatherScreen(weatherViewModel, from.arguments?.getString(MainDestinations.TOWN_NAME))
@@ -70,7 +68,6 @@ fun NavGraphBuilder.navGraph(navController: NavController, onBottomItemNavChange
         val townsViewModel = hiltViewModel<TownsViewModel>()
         TownsScreen(townsViewModel) {
             navController.navigate("${MainDestinations.WEATHER_SCREEN}?${MainDestinations.TOWN_NAME}=$it")
-            onBottomItemNavChanged(0)
         }
         Log.d("testing", "townScreenCalled")
     }

@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import com.example.weatherv2.domain.model.Town
 import com.example.weatherv2.domain.model.TownWeather
 import com.example.weatherv2.ui.weather_screen.WeatherUiState
 import com.google.android.gms.maps.model.LatLng
@@ -49,14 +48,12 @@ class WeatherNavigationActions(navController: NavHostController) {
     }
 }
 
-//@Composable
-//fun rememberWeatherAppState(
-//    currentTownWeather: TownWeather? = null,
-//    recentlyAddedTownWeather: TownWeather? = null,
-//    selectedTown: Town? = null,
-//    currentLocation: LatLng? = null
-//) =
-//    remember(currentTownWeather, recentlyAddedTownWeather, selectedTown, currentLocation) {
-//        WeatherUiState(currentTownWeather, recentlyAddedTownWeather, selectedTown, currentLocation)
-//    }
+@Composable
+fun rememberWeatherAppState(
+    currentTownWeather: TownWeather? = null,
+    currentLocation: LatLng? = null
+) =
+    remember(currentTownWeather, currentLocation) {
+        WeatherUiState(currentTownWeather, currentLocation)
+    }
 
