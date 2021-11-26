@@ -20,7 +20,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.weatherv2.AppExt.getString
+import com.example.weatherv2.R
 import com.example.weatherv2.domain.model.TownWeather
 import com.example.weatherv2.ui.theme.Typography
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -72,14 +75,20 @@ fun WeatherScreen(viewModel: WeatherViewModel, townName: String?) {
 
 @Composable
 fun InfoList(weather: TownWeather) {
-    Text(text = weather.town.name, style = Typography.h5)
+    Text(text = weather.town.name, style = Typography.h4, modifier = Modifier.padding(vertical = 10.dp))
     LazyColumn(
         Modifier
             .background(Color.White)
-            .padding(top = 16.dp)
+            .padding(top = 16.dp, start = 16.dp, end = 16.dp)
     ) {
         items(weather.weatherInfo) { item ->
-            WeatherInfoItem(label = item.label, info = item.info)
+            when(item.label){
+                getString(R.string.current_temp) -> CurrentTempItem(info = item.info)
+                getString(R.string.wind_speed) -> WeatherInfoItem(label = item.label, info = "${item.info} м/с")
+                getString(R.string.humidity) -> WeatherInfoItem(label = item.label, info = "${item.info} %")
+                else -> WeatherInfoItem(label = item.label, info = item.info)
+
+            }
             Spacer(modifier = Modifier.height(16.dp))
         }
     }
@@ -90,5 +99,12 @@ fun WeatherInfoItem(label: String, info: String) {
     Row(modifier = Modifier.fillMaxWidth()) {
         Text(text = "$label:", style = Typography.h5, modifier = Modifier.padding(start = 16.dp, end = 16.dp))
         Text(text = info, style = Typography.h5)
+    }
+}
+
+@Composable
+fun CurrentTempItem(info: String){
+    Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(text = "$info °C", style = Typography.h2)
     }
 }

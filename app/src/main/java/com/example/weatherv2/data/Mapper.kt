@@ -1,5 +1,8 @@
 package com.example.weatherv2.data
 
+import com.example.weatherv2.AppExt.getString
+import com.example.weatherv2.HiltApp
+import com.example.weatherv2.R
 import com.example.weatherv2.TownItems
 import com.example.weatherv2.data.api.WeatherResponse
 import com.example.weatherv2.domain.model.Town
@@ -15,12 +18,12 @@ object Mapper {
 
     fun WeatherResponse.toWeatherData(): List<WeatherInfo> {
         return listOf(
-            WeatherInfo("Current temp", main?.temp ?: "-"),
-            WeatherInfo("Weather conditions", weather?.get(0)?.description ?: "-"),
-            WeatherInfo("Wind speed", wind?.speed ?: "-"),
-            WeatherInfo("Humidity", main?.humidity ?: "-"),
-            WeatherInfo("Sunrise time", getDate(sys.sunrise) ?: "-"),
-            WeatherInfo("Sunset time", getDate(sys.sunset) ?: "-"),
+            WeatherInfo(getString(R.string.current_temp), main?.temp ?: "-"),
+            WeatherInfo(getString(R.string.weather_conditions), weather?.get(0)?.description ?: "-"),
+            WeatherInfo(getString(R.string.wind_speed), wind?.speed ?: "-"),
+            WeatherInfo(getString(R.string.humidity), main?.humidity ?: "-"),
+            WeatherInfo(getString(R.string.sunrise_time), getDate(sys.sunrise) ?: "-"),
+            WeatherInfo(getString(R.string.sunset_time), getDate(sys.sunset) ?: "-"),
         )
     }
 

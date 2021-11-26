@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Weatherv2</string>
+    <string name="current_temp">Температура</string>
+    <string name="weather_conditions">Погодные условия</string>
+    <string name="wind_speed">Скорость Ветра</string>
+    <string name="humidity">Влажность</string>
+    <string name="sunrise_time">Восход</string>
+    <string name="sunset_time">Закат</string>
+
 </resources>
