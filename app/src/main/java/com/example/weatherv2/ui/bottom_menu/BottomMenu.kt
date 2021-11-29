@@ -2,7 +2,13 @@ package com.example.weatherv2.ui.bottom_menu
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
@@ -18,14 +24,17 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.weatherv2.ui.theme.BottomMenuBackgroundColor
+import com.example.weatherv2.ui.theme.BottomMenuSelectedBackgroundColor
+import com.example.weatherv2.ui.theme.BottomMenuTextColor
 
 @Composable
 fun BottomMenu(
     items: List<BottomMenuContent>,
     modifier: Modifier = Modifier,
-    activeHighlightColor: Color = Color.Blue,
+    activeHighlightColor: Color = BottomMenuSelectedBackgroundColor,
     activeTextColor: Color = Color.White,
-    inactiveTextColor: Color = Color.LightGray,
+    inactiveTextColor: Color = BottomMenuTextColor,
     navController: NavController,
 ) {
 
@@ -34,7 +43,7 @@ fun BottomMenu(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .fillMaxWidth()
-            .background(Color.Cyan)
+            .background(BottomMenuBackgroundColor)
             .padding(15.dp)
     ) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -63,9 +72,9 @@ fun BottomMenu(
 fun BottomMenuItem(
     item: BottomMenuContent,
     isSelected: Boolean = false,
-    activeHighlightColor: Color = Color.Blue,
+    activeHighlightColor: Color = BottomMenuSelectedBackgroundColor,
     activeTextColor: Color = Color.White,
-    inactiveTextColor: Color = Color.LightGray,
+    inactiveTextColor: Color = BottomMenuTextColor,
     onItemClick: () -> Unit
 ) {
     Column(

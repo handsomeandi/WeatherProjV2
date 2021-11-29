@@ -18,7 +18,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class TownsUiState(
-    var townsList: List<Town> = mutableListOf()
+    var townsList: List<Town> = mutableListOf(),
+    var errorMessage: String = ""
 )
 
 @HiltViewModel
@@ -49,8 +50,8 @@ class TownsViewModel @Inject constructor(
     private fun addTown(townName: String) {
         viewModelScope.launch {
             try {
+                if (townName.isEmpty()) throw Exception("пустое поле города")
                 val weatherInfoForTown = viewModelScope.async { getWeatherDataUseCase.getWeatherData(townName) }
-                weatherInfoForTown.join()
                 val receivedTown = weatherInfoForTown.await().town
                 _state.update {
                     it.copy().apply {
@@ -59,6 +60,11 @@ class TownsViewModel @Inject constructor(
                 }
                 addTownUseCase.addTown(receivedTown)
             } catch (e: Exception) {
+                _state.update {
+                    it.copy().apply {
+                        errorMessage = "Ошибка: ${e.message}"
+                    }
+                }
                 Log.d("testing", e.message ?: "error receiving town")
             }
         }

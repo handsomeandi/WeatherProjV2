@@ -2,6 +2,7 @@ package com.example.weatherv2.ui.weather_screen
 
 import android.Manifest
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,7 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.weatherv2.AppExt.getString
 import com.example.weatherv2.R
@@ -96,15 +97,18 @@ fun InfoList(weather: TownWeather) {
 
 @Composable
 fun WeatherInfoItem(label: String, info: String) {
-    Row(modifier = Modifier.fillMaxWidth()) {
-        Text(text = "$label:", style = Typography.h5, modifier = Modifier.padding(start = 16.dp, end = 16.dp))
-        Text(text = info, style = Typography.h5)
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text(text = "$label:", style = Typography.h5, modifier = Modifier.padding(start = 16.dp, end = 16.dp), fontWeight = FontWeight.Bold)
+        Text(text = info.replaceFirstChar {
+            it.uppercase()
+        }, style = Typography.h5, modifier = Modifier.align(Alignment.CenterHorizontally))
     }
 }
 
 @Composable
 fun CurrentTempItem(info: String){
-    Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
+        Text(text = if(info.toFloat() < 0) "" else "+", style = Typography.h3, fontWeight = FontWeight.Light)
         Text(text = "$info °C", style = Typography.h2)
     }
 }

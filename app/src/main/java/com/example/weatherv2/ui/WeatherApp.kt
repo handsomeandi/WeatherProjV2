@@ -1,9 +1,10 @@
 package com.example.weatherv2.ui
 
 import android.util.Log
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -29,24 +30,28 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 fun WeatherApp() {
     val navController = rememberNavController()
     //TODO: make bottom navigation item selection and state saving work
-    Box {
+    Column(modifier = Modifier.fillMaxHeight()) {
         NavHost(
             navController = navController,
-            startDestination = "${MainDestinations.WEATHER_SCREEN}?${MainDestinations.TOWN_NAME}={townName}"
+            startDestination = "${MainDestinations.WEATHER_SCREEN}?${MainDestinations.TOWN_NAME}={townName}",
+            modifier = Modifier
+                .weight(1.0f)
         ) {
             navGraph(navController)
         }
-        BottomMenu(
-            items = listOf(
-                BottomMenuContent(
-                    "Weather",
-                    R.drawable.ic_launcher_foreground,
-                    "${MainDestinations.WEATHER_SCREEN}?${MainDestinations.TOWN_NAME}={townName}"
-                ),
-                BottomMenuContent("Towns", R.drawable.ic_launcher_foreground, MainDestinations.TOWNS_SCREEN),
-                BottomMenuContent("Info", R.drawable.ic_launcher_foreground, MainDestinations.INFO_SCREEN)
-            ), navController = navController, modifier = Modifier.align(Alignment.BottomCenter)
-        )
+        Column(verticalArrangement = Arrangement.Bottom) {
+            BottomMenu(
+                items = listOf(
+                    BottomMenuContent(
+                        "Weather",
+                        R.drawable.ic_launcher_foreground,
+                        "${MainDestinations.WEATHER_SCREEN}?${MainDestinations.TOWN_NAME}={townName}"
+                    ),
+                    BottomMenuContent("Towns", R.drawable.ic_launcher_foreground, MainDestinations.TOWNS_SCREEN),
+                    BottomMenuContent("Info", R.drawable.ic_launcher_foreground, MainDestinations.INFO_SCREEN)
+                ), navController = navController
+            )
+        }
     }
 }
 
