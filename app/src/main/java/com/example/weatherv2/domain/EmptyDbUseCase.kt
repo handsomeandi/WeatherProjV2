@@ -4,5 +4,5 @@ import com.example.weatherv2.data.repository.WeatherRepository
 import javax.inject.Inject
 
 class EmptyDbUseCase @Inject constructor(private val repository: WeatherRepository) {
-    suspend fun emptyDb() = repository.emptyDb()
+    fun emptyDb() = repository.emptyDb()
 }

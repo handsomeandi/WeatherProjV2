@@ -29,12 +29,12 @@ class WeatherRepository @Inject constructor(
         }
     }
 
-    suspend fun addTown(town: Town) = localDataSource.addTown(town)
+    fun addTown(town: Town) = localDataSource.addTown(town)
 
     fun getTown(name: String) = localDataSource.getTown(name).map { it?.toTown() }
 
-    suspend fun removeTown(id: String) = localDataSource.removeTown(id)
+    fun removeTown(id: String) = localDataSource.removeTown(id)
 
-    suspend fun emptyDb() = localDataSource.emptyDb()
+    fun emptyDb() = localDataSource.emptyDb()
 
 }

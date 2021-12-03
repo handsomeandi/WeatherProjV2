@@ -9,6 +9,7 @@ import com.example.weatherv2.domain.model.Town
 import com.example.weatherv2.ui.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
@@ -58,7 +59,9 @@ class TownsViewModel @Inject constructor(
                         townsList = it.townsList + receivedTown
                     }
                 }
-                addTownUseCase.addTown(receivedTown)
+                coroutineScope {
+                    addTownUseCase.addTown(receivedTown)
+                }
             } catch (e: Exception) {
                 _state.update {
                     it.copy().apply {

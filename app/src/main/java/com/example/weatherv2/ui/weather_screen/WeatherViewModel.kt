@@ -10,6 +10,7 @@ import com.example.weatherv2.ui.base.BaseViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
@@ -65,7 +66,9 @@ class WeatherViewModel @Inject constructor(
                         }
                     }
                     currentTownWeather?.town?.let {
-                        addTownUseCase.addTown(it)
+                        coroutineScope{
+                            addTownUseCase.addTown(it)
+                        }
                     }
                 } else {
                     _state.update {

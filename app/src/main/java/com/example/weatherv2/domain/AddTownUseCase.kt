@@ -5,5 +5,5 @@ import com.example.weatherv2.domain.model.Town
 import javax.inject.Inject
 
 class AddTownUseCase @Inject constructor(private val repository: WeatherRepository) {
-    suspend fun addTown(town: Town) = repository.addTown(town)
+    fun addTown(town: Town) = repository.addTown(town)
 }
