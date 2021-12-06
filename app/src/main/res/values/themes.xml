@@ -17,6 +17,9 @@
     <style name="Theme.Weatherv2.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="colorPrimary">@color/white</item>
+        <item name="colorPrimaryVariant">@color/white</item>
+        <item name="colorOnPrimary">@color/white</item>
     </style>
 
     <style name="Theme.Weatherv2.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />

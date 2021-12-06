@@ -11,11 +11,7 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.consumeAsFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.coroutines.resume
@@ -23,7 +19,13 @@ import kotlin.coroutines.suspendCoroutine
 
 data class WeatherUiState(
     var currentTownWeather: TownWeather? = null,
-    var currentLocation: LatLng? = null
+    var currentLocation: LatLng? = null,
+    var isRefreshing: Boolean = false,
+    var isLoading: Boolean = false,
+)
+
+sealed class WeatherUiEvents(
+
 )
 
 @HiltViewModel
@@ -42,9 +44,23 @@ class WeatherViewModel @Inject constructor(
             intent.consumeAsFlow().collect { intent ->
                 when (intent) {
                     is WeatherIntent.RequestWeather -> requestWeather(intent.townName)
-//                    else -> _state.update { state ->
-//                        state.copy()
-//                    }
+                    WeatherIntent.Refresh -> onRefresh()
+                }
+            }
+        }
+    }
+
+    private fun onRefresh() {
+        viewModelScope.launch {
+            updateUIState {
+                isRefreshing = true
+                try {
+                    currentTownWeather =
+                        getWeatherDataUseCase.getWeatherData(currentTownWeather!!.town.name)
+                } catch (e: Exception) {
+                    Log.d("testing", "Town is not received yet")
+                } finally {
+                    isRefreshing = false
                 }
             }
         }
@@ -52,32 +68,33 @@ class WeatherViewModel @Inject constructor(
 
     private fun requestWeather(townName: String?) {
         viewModelScope.launch {
-            with(_state.value) {
-                if (townName == null) {
-                    requestForLastKnownLocation()
-                    _state.update {
-                        it.copy().apply {
-                            currentLocation?.let { coordinates ->
-                                currentTownWeather = getWeatherDataUseCase.getCurrentLocationWeather(
-                                    coordinates.latitude.toString(),
-                                    coordinates.longitude.toString()
-                                )
-                            }
-                        }
+            if (townName == null) {
+                updateUIState {
+                    isLoading = true
+                }
+                requestForLastKnownLocation()
+                updateUIState {
+                    currentLocation?.let { coordinates ->
+                        currentTownWeather =
+                            getWeatherDataUseCase.getCurrentLocationWeather(
+                                coordinates.latitude.toString(),
+                                coordinates.longitude.toString()
+                            )
                     }
-                    currentTownWeather?.town?.let {
-                        coroutineScope{
-                            addTownUseCase.addTown(it)
-                        }
-                    }
-                } else {
-                    _state.update {
-                        it.copy().apply {
-                            currentTownWeather = getWeatherDataUseCase.getWeatherData(townName)
-                        }
+                    isLoading = false
+                }
+                _state.value.currentTownWeather?.town?.let {
+                    coroutineScope {
+                        addTownUseCase.addTown(it)
                     }
                 }
+            } else {
+                updateUIState {
+                    currentTownWeather = getWeatherDataUseCase.getWeatherData(townName)
+                    isLoading = false
+                }
             }
+
         }
     }
 
@@ -106,5 +123,15 @@ class WeatherViewModel @Inject constructor(
                 Log.d("testing", "No current location")
             }
 
+    }
+
+    private fun updateUIState(update: suspend WeatherUiState.() -> Unit) {
+        viewModelScope.launch {
+            _state.update {
+                it.copy().apply {
+                    this.update()
+                }
+            }
+        }
     }
 }

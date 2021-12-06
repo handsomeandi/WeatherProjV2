@@ -17,7 +17,8 @@ data class MainObject(
 )
 
 data class WeatherObject(
-    @SerializedName("description") var description: String? = null
+    @SerializedName("description") var description: String? = null,
+    @SerializedName("icon") var icon: String? = null
 )
 
 data class WindObject(

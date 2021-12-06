@@ -6,5 +6,6 @@
     <string name="humidity">Влажность</string>
     <string name="sunrise_time">Восход</string>
     <string name="sunset_time">Закат</string>
+    <string name="weather_icon">Icon</string>
 
 </resources>

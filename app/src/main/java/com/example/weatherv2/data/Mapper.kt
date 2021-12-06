@@ -19,7 +19,7 @@ object Mapper {
     fun WeatherResponse.toWeatherData(): List<WeatherInfo> {
         return listOf(
             WeatherInfo(getString(R.string.current_temp), main?.temp ?: "-"),
-            WeatherInfo(getString(R.string.weather_conditions), weather?.get(0)?.description ?: "-"),
+            WeatherInfo(getString(R.string.weather_conditions), weather?.get(0)?.description ?: "-",weather?.get(0)?.icon ?: ""),
             WeatherInfo(getString(R.string.wind_speed), wind?.speed ?: "-"),
             WeatherInfo(getString(R.string.humidity), main?.humidity ?: "-"),
             WeatherInfo(getString(R.string.sunrise_time), getDate(sys.sunrise) ?: "-"),

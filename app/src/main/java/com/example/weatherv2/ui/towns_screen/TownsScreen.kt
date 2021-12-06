@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.TabRowDefaults.Divider
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
@@ -33,10 +34,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.weatherv2.domain.model.Town
-import com.example.weatherv2.ui.theme.DefaultButtonColor
-import com.example.weatherv2.ui.theme.EditTextSelectedBackgroundColor
-import com.example.weatherv2.ui.theme.TownEditTextBackgroundColor
-import com.example.weatherv2.ui.theme.Typography
+import com.example.weatherv2.ui.theme.*
 import kotlinx.coroutines.launch
 
 @Composable
@@ -55,9 +53,10 @@ fun TownsScreen(viewModel: TownsViewModel, onTownClicked: (String) -> Unit) {
                 .weight(1.0f)
                 .padding(bottom = 10.dp)
         )
+        Divider(color = LightGray, thickness = 2.dp)
         Column(
             verticalArrangement = Arrangement.Bottom, modifier = Modifier.padding(
-                bottom = 30.dp
+                bottom = 30.dp, top = 35.dp
             )
         ) {
             val scope = rememberCoroutineScope()
@@ -68,7 +67,7 @@ fun TownsScreen(viewModel: TownsViewModel, onTownClicked: (String) -> Unit) {
                 townName = it
             }, modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 30.dp), textStyle = Typography.h6,
+                .padding(bottom = 30.dp, start = 20.dp, end = 20.dp), textStyle = Typography.h6,
                 colors = TextFieldDefaults.textFieldColors(
                     textColor = Color.Black,
                     focusedLabelColor = Color.Black,

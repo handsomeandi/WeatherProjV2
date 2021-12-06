@@ -9,6 +9,8 @@ import com.example.weatherv2.ui.weather_screen.WeatherUiState
 import com.google.android.gms.maps.model.LatLng
 
 object MainDestinations {
+    const val SPLASH_SCREEN = "splashScreen"
+    const val MAIN_APP = "mainApp"
     const val WEATHER_SCREEN = "weatherScreen"
     const val TOWNS_SCREEN = "townsScreen"
     const val INFO_SCREEN = "infoScreen"
