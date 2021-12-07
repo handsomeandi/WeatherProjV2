@@ -67,34 +67,43 @@ class WeatherViewModel @Inject constructor(
     }
 
     private fun requestWeather(townName: String?) {
-        viewModelScope.launch {
-            if (townName == null) {
+        if (townName == null) {
+            if (!_state.value.currentTownWeather?.town?.name.isNullOrEmpty()) return
+            viewModelScope.launch {
                 updateUIState {
                     isLoading = true
                 }
-                requestForLastKnownLocation()
-                updateUIState {
-                    currentLocation?.let { coordinates ->
-                        currentTownWeather =
-                            getWeatherDataUseCase.getCurrentLocationWeather(
-                                coordinates.latitude.toString(),
-                                coordinates.longitude.toString()
-                            )
-                    }
-                    isLoading = false
-                }
+                requestCurrentLocationWeather()
                 _state.value.currentTownWeather?.town?.let {
                     coroutineScope {
                         addTownUseCase.addTown(it)
                     }
                 }
-            } else {
-                updateUIState {
-                    currentTownWeather = getWeatherDataUseCase.getWeatherData(townName)
-                    isLoading = false
-                }
             }
+        } else {
+            if (townName == _state.value.currentTownWeather?.town?.name) return
+            updateUIState {
+                isLoading = true
+            }
+            updateUIState {
+                currentTownWeather = getWeatherDataUseCase.getWeatherData(townName)
+                isLoading = false
+            }
+        }
 
+    }
+
+    private suspend fun requestCurrentLocationWeather() {
+        requestForLastKnownLocation()
+        updateUIState {
+            currentLocation?.let { coordinates ->
+                currentTownWeather =
+                    getWeatherDataUseCase.getCurrentLocationWeather(
+                        coordinates.latitude.toString(),
+                        coordinates.longitude.toString()
+                    )
+            }
+            isLoading = false
         }
     }
 

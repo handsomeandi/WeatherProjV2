@@ -29,7 +29,7 @@ class MainActivity : ComponentActivity() {
                     composable(MainDestinations.SPLASH_SCREEN) {
                         SplashScreen {
                             navController.navigate(MainDestinations.MAIN_APP) {
-                                popUpTo(MainDestinations.MAIN_APP) {
+                                popUpTo(MainDestinations.SPLASH_SCREEN) {
                                     inclusive = true
                                 }
                             }

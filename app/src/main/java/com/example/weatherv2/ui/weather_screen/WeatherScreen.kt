@@ -92,53 +92,59 @@ fun WeatherScreen(viewModel: WeatherViewModel, townName: String?) {
 
 @Composable
 fun InfoList(weather: TownWeather) {
-    Text(
-        text = weather.town.name,
-        style = Typography.h4,
-        modifier = Modifier.padding(vertical = 10.dp)
-    )
-    LazyColumn(
-        Modifier
-            .background(Color.White)
-            .padding(top = 16.dp, start = 16.dp, end = 16.dp)
-    ) {
-        items(weather.weatherInfo) { item ->
-            when (item.label) {
-                getString(R.string.current_temp) -> CurrentTempItem(info = item.info)
-                getString(R.string.weather_conditions) -> WeatherConditionsItem(
-                    url = AppUrls.iconUrl.format(
-                        item.icon
-                    ), label = item.label, info = item.info
-                )
-                getString(R.string.wind_speed) -> WeatherInfoItem(
-                    label = item.label,
-                    info = "${item.info} м/с"
-                )
-                getString(R.string.humidity) -> WeatherInfoItem(
-                    label = item.label,
-                    info = "${item.info} %"
-                )
-                else -> WeatherInfoItem(label = item.label, info = item.info)
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(
+            text = weather.town.name,
+            style = Typography.h5
+        )
+        LazyColumn(
+            Modifier
+                .background(Color.White)
+                .padding(top = 16.dp, start = 16.dp, end = 16.dp)
+        ) {
+            items(weather.weatherInfo) { item ->
+                when (item.label) {
+                    getString(R.string.current_temp) -> CurrentTempItem(info = item.info)
+                    getString(R.string.weather_conditions) -> WeatherConditionsItem(
+                        url = AppUrls.iconUrl.format(
+                            item.icon
+                        ), info = item.info
+                    )
+                    getString(R.string.wind_speed) -> WeatherInfoItem(
+                        label = item.label,
+                        info = "${item.info} м/с"
+                    )
+                    getString(R.string.humidity) -> WeatherInfoItem(
+                        label = item.label,
+                        info = "${item.info} %"
+                    )
+                    else -> WeatherInfoItem(label = item.label, info = item.info)
 
+                }
+                Spacer(modifier = Modifier.height(16.dp))
             }
-            Spacer(modifier = Modifier.height(16.dp))
         }
     }
+
 
 }
 
 @Composable
-fun WeatherConditionsItem(url: String, label: String, info: String) {
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            GlideImage(imageModel = url, modifier = Modifier.size(100.dp).padding(end = 30.dp))
-            Text(text = info.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }, style = Typography.h4)
-        }
+fun WeatherConditionsItem(url: String, info: String) {
+    Column(
+        modifier = Modifier.fillMaxWidth().padding(bottom = 10.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        if (url.isNotEmpty()) GlideImage(
+            imageModel = url, modifier = Modifier
+                .size(120.dp)
+        )
+        Text(
+            text = info.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() },
+            style = Typography.h5
+        )
     }
+
 }
 
 @Composable
@@ -163,11 +169,6 @@ fun CurrentTempItem(info: String) {
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            text = if (info.toFloat() < 0) "" else "+",
-            style = Typography.h3,
-            fontWeight = FontWeight.Light
-        )
         Text(text = "$info °C", style = Typography.h2)
     }
 }

@@ -43,12 +43,12 @@ fun WeatherApp() {
             BottomMenu(
                 items = listOf(
                     BottomMenuContent(
-                        "Weather",
-                        R.drawable.ic_launcher_foreground,
+                        "Погода",
+                        R.drawable.ic_weather_icon_bottom,
                         "${MainDestinations.WEATHER_SCREEN}?${MainDestinations.TOWN_NAME}={townName}"
                     ),
-                    BottomMenuContent("Towns", R.drawable.ic_launcher_foreground, MainDestinations.TOWNS_SCREEN),
-                    BottomMenuContent("Info", R.drawable.ic_launcher_foreground, MainDestinations.INFO_SCREEN)
+                    BottomMenuContent("Города", R.drawable.ic_town_icon, MainDestinations.TOWNS_SCREEN),
+                    BottomMenuContent("Обо мне", R.drawable.ic_about_icon, MainDestinations.INFO_SCREEN)
                 ), navController = navController
             )
         }

@@ -31,7 +31,7 @@ fun SplashScreen(navigate: () -> Unit) {
                 }
             )
         )
-        delay(3000)
+        delay(1500)
         navigate()
     }
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
