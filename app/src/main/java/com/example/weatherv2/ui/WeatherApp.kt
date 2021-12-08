@@ -1,6 +1,7 @@
 package com.example.weatherv2.ui
 
 import android.util.Log
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -24,6 +25,7 @@ import com.example.weatherv2.ui.weather_screen.WeatherScreen
 import com.example.weatherv2.ui.weather_screen.WeatherViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 
+@ExperimentalAnimationApi
 @ExperimentalPermissionsApi
 @Preview
 @Composable
@@ -56,6 +58,7 @@ fun WeatherApp() {
 }
 
 
+@ExperimentalAnimationApi
 @ExperimentalPermissionsApi
 fun NavGraphBuilder.navGraph(navController: NavController) {
     composable("${MainDestinations.WEATHER_SCREEN}?${MainDestinations.TOWN_NAME}={townName}") { from ->

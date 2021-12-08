@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.weatherv2.domain.AddTownUseCase
 import com.example.weatherv2.domain.GetAllTownsUseCase
 import com.example.weatherv2.domain.GetWeatherDataUseCase
+import com.example.weatherv2.domain.RemoveTownUseCase
 import com.example.weatherv2.domain.model.Town
 import com.example.weatherv2.ui.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,7 +28,8 @@ data class TownsUiState(
 class TownsViewModel @Inject constructor(
     private val getAllTownsUseCase: GetAllTownsUseCase,
     private val addTownUseCase: AddTownUseCase,
-    private val getWeatherDataUseCase: GetWeatherDataUseCase
+    private val getWeatherDataUseCase: GetWeatherDataUseCase,
+    private val removeTownUseCase: RemoveTownUseCase,
 ) : BaseViewModel<TownsIntent>() {
 
     private val _state: MutableStateFlow<TownsUiState> = MutableStateFlow(TownsUiState())
@@ -40,9 +42,7 @@ class TownsViewModel @Inject constructor(
                 when (intent) {
                     is TownsIntent.AddTown -> addTown(intent.townName)
                     TownsIntent.GetAllTowns -> getAllTowns()
-//                    else -> _state.update { state ->
-//                        state.copy()
-//                    }
+                    is TownsIntent.RemoveTown -> removeTown(intent.townId)
                 }
             }
         }
@@ -53,15 +53,17 @@ class TownsViewModel @Inject constructor(
             try {
                 if (townName.isEmpty()) throw Exception("пустое поле города")
                 val weatherInfoForTown = viewModelScope.async { getWeatherDataUseCase.getWeatherData(townName) }
-                val receivedTown = weatherInfoForTown.await().town
+                val receivedTown = weatherInfoForTown.await().town.also {
+                    coroutineScope {
+                        addTownUseCase.addTown(it)
+                    }
+                }
                 _state.update {
                     it.copy().apply {
                         townsList = it.townsList + receivedTown
                     }
                 }
-                coroutineScope {
-                    addTownUseCase.addTown(receivedTown)
-                }
+
             } catch (e: Exception) {
                 _state.update {
                     it.copy().apply {
@@ -83,6 +85,16 @@ class TownsViewModel @Inject constructor(
                         }
                     }
                 }
+            }
+        }
+    }
+
+    private fun removeTown(id: String) {
+        viewModelScope.launch {
+            try {
+                removeTownUseCase.removeTown(id)
+            }catch (e: Exception){
+                Log.d("testing", e.message ?: "error removing town")
             }
         }
     }

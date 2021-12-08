@@ -1,21 +1,24 @@
 package com.example.weatherv2.ui.towns_screen
 
 import android.widget.Toast
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Icon
 import androidx.compose.material.TabRowDefaults.Divider
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
@@ -32,14 +35,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.example.weatherv2.R
 import com.example.weatherv2.domain.model.Town
-import com.example.weatherv2.ui.theme.*
+import com.example.weatherv2.ui.theme.DefaultButtonColor
+import com.example.weatherv2.ui.theme.EditTextSelectedBackgroundColor
+import com.example.weatherv2.ui.theme.LightGray
+import com.example.weatherv2.ui.theme.TownEditTextBackgroundColor
+import com.example.weatherv2.ui.theme.Typography
 import kotlinx.coroutines.launch
 
+@ExperimentalAnimationApi
 @Composable
 fun TownsScreen(viewModel: TownsViewModel, onTownClicked: (String) -> Unit) {
     val townsState by viewModel.state.collectAsState()
+    val scope = rememberCoroutineScope()
     LaunchedEffect(townsState.townsList) {
         viewModel.intent.send(TownsIntent.GetAllTowns)
     }
@@ -49,9 +60,14 @@ fun TownsScreen(viewModel: TownsViewModel, onTownClicked: (String) -> Unit) {
     ) {
         TownList(
             list = townsState.townsList, onTownClicked, modifier = Modifier
-                .background(Color.White)
+                .background(LightGray)
                 .weight(1.0f)
-                .padding(bottom = 10.dp)
+                .padding(bottom = 10.dp),
+            onRemoveClicked = {
+                scope.launch {
+                    viewModel.intent.send(TownsIntent.RemoveTown(it))
+                }
+            }
         )
         Divider(color = LightGray, thickness = 2.dp)
         Column(
@@ -59,7 +75,6 @@ fun TownsScreen(viewModel: TownsViewModel, onTownClicked: (String) -> Unit) {
                 bottom = 30.dp, top = 35.dp
             )
         ) {
-            val scope = rememberCoroutineScope()
             var townName by remember {
                 mutableStateOf("")
             }
@@ -103,37 +118,52 @@ fun ShowError(errorMessage: String) {
     if (errorMessage.isNotEmpty()) Toast.makeText(LocalContext.current, errorMessage, Toast.LENGTH_LONG).show()
 }
 
+@ExperimentalAnimationApi
 @Composable
-fun TownList(list: List<Town>, onTownClicked: (String) -> Unit, modifier: Modifier) {
+fun TownList(list: List<Town>, onTownClicked: (String) -> Unit, modifier: Modifier, onRemoveClicked: (String) -> Unit) {
     Box(modifier) {
         LazyColumn(Modifier) {
             items(list) { item ->
-                TownItem(town = item, onClick = {
-                    onTownClicked(it)
-                })
+                TownItem(
+                    town = item, onClick =
+                    onTownClicked,
+                    onRemoveClicked =
+                    onRemoveClicked
+                )
+
             }
         }
     }
-
 }
 
 
 @Composable
-fun TownItem(town: Town, onClick: (id: String) -> Unit) {
-    Column(
+fun TownItem(town: Town, onClick: (id: String) -> Unit, onRemoveClicked: (String) -> Unit) {
+    Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(70.dp)
+            .padding(start = 10.dp, end = 10.dp, top = 10.dp)
+            .background(Color.White)
             .clickable {
                 onClick(town.name)
-            }, verticalArrangement = Arrangement.Center
+            }, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween
     ) {
 
         Text(
             text = "• ${town.name}", style = Typography.h5, modifier = Modifier
-                .fillMaxHeight()
-                .fillMaxWidth()
-                .padding(start = 20.dp, end = 20.dp, top = 15.dp)
+                .padding(start = 20.dp, end = 20.dp)
+        )
+        Icon(
+            painter = painterResource(id = R.drawable.ic_delete_icon),
+            contentDescription = "removeTown",
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
+                .padding(end = 20.dp)
+                .size(25.dp)
+                .clickable {
+                    onRemoveClicked(town.id)
+                }, tint = Color.Red
         )
     }
 }

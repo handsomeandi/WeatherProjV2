@@ -10,8 +10,13 @@ import com.example.weatherv2.ui.base.BaseViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.coroutines.resume
@@ -22,10 +27,6 @@ data class WeatherUiState(
     var currentLocation: LatLng? = null,
     var isRefreshing: Boolean = false,
     var isLoading: Boolean = false,
-)
-
-sealed class WeatherUiEvents(
-
 )
 
 @HiltViewModel
@@ -74,11 +75,6 @@ class WeatherViewModel @Inject constructor(
                     isLoading = true
                 }
                 requestCurrentLocationWeather()
-                _state.value.currentTownWeather?.town?.let {
-                    coroutineScope {
-                        addTownUseCase.addTown(it)
-                    }
-                }
             }
         } else {
             if (townName == _state.value.currentTownWeather?.town?.name) return
@@ -97,11 +93,19 @@ class WeatherViewModel @Inject constructor(
         requestForLastKnownLocation()
         updateUIState {
             currentLocation?.let { coordinates ->
-                currentTownWeather =
-                    getWeatherDataUseCase.getCurrentLocationWeather(
-                        coordinates.latitude.toString(),
-                        coordinates.longitude.toString()
-                    )
+                coroutineScope {
+                    val currentLocationWeather = async {
+                        getWeatherDataUseCase.getCurrentLocationWeather(
+                            coordinates.latitude.toString(),
+                            coordinates.longitude.toString()
+                        )
+                    }
+                    currentTownWeather = currentLocationWeather.await().also {
+                        coroutineScope {
+                            addTownUseCase.addTown(it.town)
+                        }
+                    }
+                }
             }
             isLoading = false
         }

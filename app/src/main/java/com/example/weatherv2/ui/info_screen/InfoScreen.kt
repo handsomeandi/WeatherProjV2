@@ -18,8 +18,8 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun InfoScreen() {
     Column(Modifier.fillMaxHeight().fillMaxWidth().background(Color.White).padding(horizontal = 30.dp, vertical = 20.dp), horizontalAlignment = Alignment.Start) {
-        Text(text = "Name: Detyarev Arthur Ruslanovich", fontSize = 20.sp)
-        Text(text = "Phone: +79788003158", fontSize = 20.sp)
-        Text(text = "Libraries: Compose, Navigation Component, SqlDelight, Retrofit, Hilt, Coroutines, Gson ", fontSize = 20.sp)
+        Text(text = "Имя: Дегтярев Артур Русланович", fontSize = 20.sp)
+        Text(text = "Телефон: +79788003158", fontSize = 20.sp)
+        Text(text = "Библиотеки: Compose, Navigation Component, SqlDelight, Retrofit, Hilt, Coroutines, Gson ", fontSize = 20.sp)
     }
 }
