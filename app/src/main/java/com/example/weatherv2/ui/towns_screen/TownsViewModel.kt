@@ -30,11 +30,15 @@ class TownsViewModel @Inject constructor(
     private val addTownUseCase: AddTownUseCase,
     private val getWeatherDataUseCase: GetWeatherDataUseCase,
     private val removeTownUseCase: RemoveTownUseCase,
-) : BaseViewModel<TownsIntent>() {
+) : BaseViewModel<TownsIntent, TownsUiState>() {
 
-    private val _state: MutableStateFlow<TownsUiState> = MutableStateFlow(TownsUiState())
+    override val _state: MutableStateFlow<TownsUiState> = MutableStateFlow(TownsUiState())
     val state: StateFlow<TownsUiState>
         get() = _state
+
+    init {
+        handleIntent()
+    }
 
     override fun handleIntent() {
         viewModelScope.launch {
@@ -58,17 +62,14 @@ class TownsViewModel @Inject constructor(
                         addTownUseCase.addTown(it)
                     }
                 }
-                _state.update {
-                    it.copy().apply {
-                        townsList = it.townsList + receivedTown
-                    }
+                updateUIState {
+                    townsList = townsList + receivedTown
+
                 }
 
             } catch (e: Exception) {
-                _state.update {
-                    it.copy().apply {
-                        errorMessage = "Ошибка: ${e.message}"
-                    }
+                updateUIState {
+                    errorMessage = "Ошибка: ${e.message}"
                 }
                 Log.d("testing", e.message ?: "error receiving town")
             }
@@ -79,10 +80,8 @@ class TownsViewModel @Inject constructor(
         viewModelScope.launch {
             if (_state.value.townsList.isNullOrEmpty()) {
                 getAllTownsUseCase.getAllTowns().collect { towns ->
-                    _state.update {
-                        it.copy().apply {
-                            townsList = towns
-                        }
+                    updateUIState {
+                        townsList = towns
                     }
                 }
             }
@@ -93,8 +92,18 @@ class TownsViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 removeTownUseCase.removeTown(id)
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 Log.d("testing", e.message ?: "error removing town")
+            }
+        }
+    }
+
+    override fun updateUIState(update: suspend TownsUiState.() -> Unit) {
+        viewModelScope.launch {
+            _state.update {
+                it.copy().apply {
+                    update()
+                }
             }
         }
     }

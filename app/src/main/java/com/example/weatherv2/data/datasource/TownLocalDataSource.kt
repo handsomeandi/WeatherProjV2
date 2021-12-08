@@ -4,7 +4,7 @@ import com.example.weatherv2.data.storage.TownDao
 import com.example.weatherv2.domain.model.Town
 import javax.inject.Inject
 
-class WeatherLocalDataSource @Inject constructor(private val dao: TownDao) {
+class TownLocalDataSource @Inject constructor(private val dao: TownDao) {
 
     fun getAllTowns() = dao.getAllTowns()
 

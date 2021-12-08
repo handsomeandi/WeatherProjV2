@@ -25,13 +25,11 @@ import com.example.weatherv2.ui.weather_screen.WeatherScreen
 import com.example.weatherv2.ui.weather_screen.WeatherViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 
-@ExperimentalAnimationApi
 @ExperimentalPermissionsApi
 @Preview
 @Composable
 fun WeatherApp() {
     val navController = rememberNavController()
-    //TODO: make bottom navigation item selection and state saving work
     Column(modifier = Modifier.fillMaxHeight()) {
         NavHost(
             navController = navController,
@@ -58,7 +56,6 @@ fun WeatherApp() {
 }
 
 
-@ExperimentalAnimationApi
 @ExperimentalPermissionsApi
 fun NavGraphBuilder.navGraph(navController: NavController) {
     composable("${MainDestinations.WEATHER_SCREEN}?${MainDestinations.TOWN_NAME}={townName}") { from ->

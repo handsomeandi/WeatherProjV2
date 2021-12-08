@@ -34,11 +34,15 @@ class WeatherViewModel @Inject constructor(
     private val fusedLocationProviderClient: FusedLocationProviderClient,
     private val getWeatherDataUseCase: GetWeatherDataUseCase,
     private val addTownUseCase: AddTownUseCase
-) : BaseViewModel<WeatherIntent>() {
+) : BaseViewModel<WeatherIntent, WeatherUiState>() {
 
-    private val _state: MutableStateFlow<WeatherUiState> = MutableStateFlow(WeatherUiState())
+    override val _state: MutableStateFlow<WeatherUiState> = MutableStateFlow(WeatherUiState())
     val state: StateFlow<WeatherUiState>
         get() = _state
+
+    init {
+        handleIntent()
+    }
 
     override fun handleIntent() {
         viewModelScope.launch {
@@ -138,11 +142,11 @@ class WeatherViewModel @Inject constructor(
 
     }
 
-    private fun updateUIState(update: suspend WeatherUiState.() -> Unit) {
+    override fun updateUIState(update: suspend WeatherUiState.() -> Unit) {
         viewModelScope.launch {
             _state.update {
                 it.copy().apply {
-                    this.update()
+                    update()
                 }
             }
         }

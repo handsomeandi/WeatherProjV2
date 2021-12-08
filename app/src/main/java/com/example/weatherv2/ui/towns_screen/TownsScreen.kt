@@ -46,7 +46,6 @@ import com.example.weatherv2.ui.theme.TownEditTextBackgroundColor
 import com.example.weatherv2.ui.theme.Typography
 import kotlinx.coroutines.launch
 
-@ExperimentalAnimationApi
 @Composable
 fun TownsScreen(viewModel: TownsViewModel, onTownClicked: (String) -> Unit) {
     val townsState by viewModel.state.collectAsState()
@@ -118,7 +117,6 @@ fun ShowError(errorMessage: String) {
     if (errorMessage.isNotEmpty()) Toast.makeText(LocalContext.current, errorMessage, Toast.LENGTH_LONG).show()
 }
 
-@ExperimentalAnimationApi
 @Composable
 fun TownList(list: List<Town>, onTownClicked: (String) -> Unit, modifier: Modifier, onRemoveClicked: (String) -> Unit) {
     Box(modifier) {
